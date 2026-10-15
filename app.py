@@ -74,9 +74,9 @@ col1, col2 = st.columns(2, gap="medium")
 
 with col1:
     st.subheader("📐 Circuit Diagram")
-    fig_circ, ax_circ = plt.subplots(figsize=(5, 2.5))
+    fig_circ, ax_circ = plt.subplots(figsize=(4, 1.8))
     qc.draw(output='mpl', ax=ax_circ)
-    st.pyplot(fig_circ)
+    st.pyplot(fig_circ, use_container_width=False)
     
     st.subheader("🔮 Statevector Amplitudes")
     sv_simulator = AerSimulator()
@@ -93,14 +93,14 @@ with col2:
     result = job.result()
     counts = result.get_counts(qc)
     
-    fig_hist, ax_hist = plt.subplots(figsize=(5, 2.5))
+    fig_hist, ax_hist = plt.subplots(figsize=(4, 1.8))
     plot_histogram(counts, ax=ax_hist)
-    st.pyplot(fig_hist)
+    st.pyplot(fig_hist, use_container_width=False)
     
     st.subheader("🌐 Bloch Sphere Projection")
     try:
         fig_bloch = plot_bloch_multivector(statevector)
-        st.pyplot(fig_bloch)
+        st.pyplot(fig_bloch, use_container_width=False)
     except Exception as e:
         st.info("Bloch multi-vector rendered for active states.")
 
