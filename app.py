@@ -11,23 +11,23 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom CSS to remove excessive padding so everything fits on one screen
+# Custom CSS for perfect single-screen layout and padding
 st.markdown("""
     <style>
         .block-container {
-            padding-top: 1rem;
+            padding-top: 2rem;
             padding-bottom: 0rem;
             padding-left: 2rem;
             padding-right: 2rem;
         }
-        h1 { font-size: 1.5rem !important; margin-bottom: 0px !important; }
-        h3 { font-size: 1.1rem !important; margin-top: 0px !important; margin-bottom: 5px !important; }
-        p { font-size: 0.85rem !important; margin-bottom: 5px !important; }
+        h2 { font-size: 1.3rem !important; margin-bottom: 5px !important; }
+        h4 { font-size: 0.95rem !important; margin-top: 5px !important; margin-bottom: 3px !important; }
+        p { font-size: 0.8rem !important; margin-bottom: 3px !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# Compact Header
-st.markdown("### ⚛️ QuantumLab — Interactive Quantum Circuit Simulator")
+# Visible Main Title
+st.markdown("## ⚛️ QuantumLab — Interactive Quantum Circuit Simulator")
 
 st.sidebar.header("🔧 Circuit Settings")
 preset = st.sidebar.selectbox("⚡ Quick Presets", ["Custom Circuit", "Bell State", "GHZ State (3-Qubit)"])
@@ -65,16 +65,16 @@ qc_no_meas = qc.remove_final_measurements(inplace=False)
 qc_no_meas.save_statevector()
 qc.measure(range(num_qubits), range(num_qubits))
 
-# Ultra-compact 2-Column Dashboard Layout
-col1, col2 = st.columns(2, gap="small")
+# Balanced 2-Column Dashboard Layout
+col1, col2 = st.columns(2, gap="medium")
 
 with col1:
-    st.markdown("### 📐 Circuit Diagram")
-    fig_circ, ax_circ = plt.subplots(figsize=(3.5, 1.4))
+    st.markdown("#### 📐 Circuit Diagram")
+    fig_circ, ax_circ = plt.subplots(figsize=(3.2, 1.3))
     qc.draw(output='mpl', ax=ax_circ)
     st.pyplot(fig_circ, use_container_width=False)
     
-    st.markdown("### 🔮 Statevector Amplitudes")
+    st.markdown("#### 🔮 Statevector Amplitudes")
     sv_simulator = AerSimulator()
     transpiled_sv = transpile(qc_no_meas, sv_simulator)
     result_sv = sv_simulator.run(transpiled_sv).result()
@@ -82,20 +82,22 @@ with col1:
     st.text(str(statevector))
 
 with col2:
-    st.markdown("### 📊 Measurement Probabilities")
+    st.markdown("#### 📊 Measurement Probabilities")
     simulator = AerSimulator()
     transpiled_qc = transpile(qc, simulator)
     job = simulator.run(transpiled_qc, shots=shots)
     result = job.result()
     counts = result.get_counts(qc)
     
-    fig_hist, ax_hist = plt.subplots(figsize=(3.5, 1.4))
+    fig_hist, ax_hist = plt.subplots(figsize=(3.2, 1.3))
     plot_histogram(counts, ax=ax_hist)
     st.pyplot(fig_hist, use_container_width=False)
     
-    st.markdown("### 🌐 Bloch Sphere Projection")
+    st.markdown("#### 🌐 Bloch Sphere Projection")
     try:
         fig_bloch = plot_bloch_multivector(statevector)
+        # Resize bloch figure slightly to match compact layout
+        fig_bloch.set_size_inches(3.2, 1.3)
         st.pyplot(fig_bloch, use_container_width=False)
     except Exception:
         st.info("Bloch multi-vector rendered.")
