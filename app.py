@@ -11,14 +11,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# App Header
 st.title("⚛️ QuantumLab — Advanced Interactive Quantum Circuit Simulator")
 st.markdown("Build, analyze, and simulate multi-qubit quantum circuits with statevectors, noise toggles, custom rotation gates, and entanglement presets right in your browser.")
 
-# Sidebar Configuration
 st.sidebar.header("🔧 Circuit & Simulation Settings")
 
-# Presets
 preset = st.sidebar.selectbox("⚡ Quick Circuit Presets", ["Custom Circuit", "Bell State (Entanglement)", "GHZ State (3-Qubit Entanglement)"])
 
 num_qubits = st.sidebar.slider("Number of Qubits", min_value=1, max_value=4, value=2 if preset=="Custom Circuit" else (3 if "GHZ" in preset else 2))
@@ -56,7 +53,6 @@ else:
         elif gate == "T Gate":
             qc.t(i)
 
-    # Advanced Multi-qubit CNOT control
     if num_qubits >= 2:
         st.sidebar.subheader("Entanglement (CNOT)")
         add_cnot = st.sidebar.checkbox("Add CNOT (CX) Gate")
@@ -68,10 +64,12 @@ else:
             else:
                 st.sidebar.warning("Control and Target qubits must be different.")
 
-# Always add measurements for execution
+# Save statevector instruction before measurement
+qc_no_meas = qc.remove_final_measurements(inplace=False)
+qc_no_meas.save_statevector()
+
 qc.measure(range(num_qubits), range(num_qubits))
 
-# Layout columns for Dashboard View
 col1, col2 = st.columns(2)
 
 with col1:
@@ -81,14 +79,11 @@ with col1:
     st.pyplot(fig_circ)
     
     st.subheader("🔮 Statevector Amplitudes (Theoretical)")
-    # Run statevector simulation without measurements
-    qc_no_meas = qc.remove_final_measurements(inplace=False)
-    sv_simulator = AerSimulator(method='statevector')
+    sv_simulator = AerSimulator()
     transpiled_sv = transpile(qc_no_meas, sv_simulator)
     result_sv = sv_simulator.run(transpiled_sv).result()
     statevector = result_sv.get_statevector(qc_no_meas)
     
-    # Display statevector values in an expandable table or clean text
     st.write(statevector.draw(output='text'))
 
 with col2:
